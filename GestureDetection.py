@@ -1,4 +1,5 @@
 import mediapipe as mp
+import numpy as np
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 import cv2 as cv
@@ -14,6 +15,12 @@ class GestureDetector:
         self.recognizer: vision.GestureRecognizer = None
         self.maxGestureCount = gestureSpace
         self.gestures: [] = []
+
+        self.frame_count: int = 0
+        self.cam: cv.VideoCapture = None
+        self.shrinkFactor = 5  # factor to shrink the camera image from
+        self.width : int = 0
+        self.height: int = 0
 
         self.configRecognizer("model/gesture_recognizer.task")
 
@@ -45,36 +52,58 @@ class GestureDetector:
                                                   result_callback=self.print_result)
         self.recognizer = vision.GestureRecognizer.create_from_options(options)
 
-    def run(self):
-        cam = cv.VideoCapture(0)
+    # def run(self):
+    #     cam = cv.VideoCapture(0)
+    #
+    #     if not cam.isOpened():
+    #         print("Unable to access camera")  # kill the program if the camera is not accessed
+    #         cam.release()
+    #         exit()
+    #
+    #     frame_count = 0
+    #     while True:
+    #         frame_count += 1
+    #         retrieved, frame = cam.read()
+    #
+    #         if not retrieved:
+    #             print("Stream has likely ended")
+    #             break
+    #
+    #         mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
+    #         self.recognizer.recognize_async(mp_img, frame_count) # TODO Fix the timestamp ms thing instead of just returning the frame count
+    #
+    #         cv.imshow("stream", frame)
+    #         # https://stackoverflow.com/questions/5217519/what-does-opencvs-cvwaitkey-function-do <-- how waitKey works
+    #         if cv.waitKey(1) == ord("q"):  # gets the unicode value for q
+    #             break
+    #
+    #     cam.release()
+    #     cv.destroyAllWindows()
 
-        if not cam.isOpened():
+    def initStream(self):
+        self.cam = cv.VideoCapture(0)
+
+        self.width = self.cam.get(cv.CAP_PROP_FRAME_WIDTH) / self.shrinkFactor
+        self.height = self.cam.get(cv.CAP_PROP_FRAME_HEIGHT) / self.shrinkFactor
+
+        if not self.cam.isOpened():
             print("Unable to access camera")  # kill the program if the camera is not accessed
-            cam.release()
+            self.cam.release()
             exit()
 
-        frame_count = 0
-        while True:
-            frame_count += 1
-            retrieved, frame = cam.read()
+        self.frame_count = 0
 
-            if not retrieved:
-                print("Stream has likely ended")
-                break
+    def getCurrentFrame(self) -> np.array: # camera information to get called every frame <-- must be put in a while loop
+        self.frame_count += 1
+        retrieved, frame = self.cam.read()
 
-            mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
-            self.recognizer.recognize_async(mp_img, frame_count) # TODO Fix the timestamp ms thing instead of just returning the frame count
+        frame = cv.resize(frame, (self.height, self.width))
+        if not retrieved:
+            print("Stream has likely ended")
+            return
+        return frame
 
-            cv.imshow("stream", frame)
-            # https://stackoverflow.com/questions/5217519/what-does-opencvs-cvwaitkey-function-do <-- how waitKey works
-            if cv.waitKey(1) == ord("q"):  # gets the unicode value for q
-                break
-
-        cam.release()
-        cv.destroyAllWindows()
-
-
-g = GestureDetector(10)
-g.run()
-print(g.gestures)
+# g = GestureDetector(10)
+# g.run()
+# print(g.gestures)
 # TODO: Fix issue where you can only get the gestures after you finish the program. Run simultaneously or smth

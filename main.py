@@ -1,4 +1,2 @@
-from screen import Screen
-
-s = Screen()
-s.runLoop()
+from GestureScreen import GestureScreen
+GestureScreen().runLoop()
