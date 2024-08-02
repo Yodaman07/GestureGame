@@ -16,7 +16,7 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
 
         self.running = True
 
-        streamArea = pygame.Surface((gd.height, gd.width))
+        streamArea = pygame.Surface((gd.width, gd.height))
         streamArea.fill("green")  # will only paint once
 
         while self.running:

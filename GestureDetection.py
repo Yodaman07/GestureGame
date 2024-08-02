@@ -19,7 +19,7 @@ class GestureDetector:
         self.frame_count: int = 0
         self.cam: cv.VideoCapture = None
         self.shrinkFactor = 5  # factor to shrink the camera image from
-        self.width : int = 0
+        self.width: int = 0
         self.height: int = 0
 
         self.configRecognizer("model/gesture_recognizer.task")
@@ -83,21 +83,22 @@ class GestureDetector:
     def initStream(self):
         self.cam = cv.VideoCapture(0)
 
-        self.width = self.cam.get(cv.CAP_PROP_FRAME_WIDTH) / self.shrinkFactor
-        self.height = self.cam.get(cv.CAP_PROP_FRAME_HEIGHT) / self.shrinkFactor
-
         if not self.cam.isOpened():
             print("Unable to access camera")  # kill the program if the camera is not accessed
             self.cam.release()
             exit()
 
+        self.width = int(self.cam.get(cv.CAP_PROP_FRAME_WIDTH) / self.shrinkFactor)
+        self.height = int(self.cam.get(cv.CAP_PROP_FRAME_HEIGHT) / self.shrinkFactor)
+
         self.frame_count = 0
 
-    def getCurrentFrame(self) -> np.array: # camera information to get called every frame <-- must be put in a while loop
+    def getCurrentFrame(
+            self) -> np.array:  # camera information to get called every frame <-- must be put in a while loop
         self.frame_count += 1
         retrieved, frame = self.cam.read()
 
-        frame = cv.resize(frame, (self.height, self.width))
+        frame = cv.resize(frame, (int(self.width), int(self.height)))
         if not retrieved:
             print("Stream has likely ended")
             return
