@@ -1,2 +1,10 @@
 from GestureScreen import GestureScreen
-GestureScreen().runLoop()
+import pygame
+
+gs = GestureScreen()
+gs.initUI(10)
+while gs.running:
+    gs.display()
+
+gs.gd.cam.release()
+pygame.quit()

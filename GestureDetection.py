@@ -9,14 +9,14 @@ import cv2 as cv
 # https://ai.google.dev/edge/mediapipe/solutions/vision/gesture_recognizer/python#live-stream
 # https://stackoverflow.com/questions/47743246/getting-timestamp-of-each-frame-in-a-video <-- I didn't use the code but the idea helped for getting the timestamp
 
-
+# TODO improve accuracy of the gesture detector/draw the results
 class GestureDetector:
     def __init__(self, gestureSpace):
         self.recognizer: vision.GestureRecognizer = None
         self.maxGestureCount = gestureSpace
         self.gestures: [] = []
         # https: // ai.google.dev / edge / mediapipe / solutions / vision / gesture_recognizer
-        self.possibleGestures = ["Unknown", "Closed_Fist", "Open_Palm", "Pointing_Up", "Thumb_Down", "Thumb_Up",
+        self.possibleGestures = ["None", "Closed_Fist", "Open_Palm", "Pointing_Up", "Thumb_Down", "Thumb_Up",
                                  "Victory", "ILoveYou"]
 
         self.frame_count: int = 0
@@ -32,15 +32,13 @@ class GestureDetector:
             data = result.gestures[0][0]
             name = data.category_name
             confidence = data.score
-
             gestureData = {"Name": name, "Confidence": round(confidence * 100, 2), "Timestamp": timestamp_ms}
-            print(gestureData)
+            # print(gestureData)
             self.appendGestureData(gestureData)
 
         else:
-            # TODO Add diff between None and Unknown
             gestureData = {"Name": None, "Confidence": None, "Timestamp": timestamp_ms}
-            print(gestureData)
+            # print(gestureData)
             self.appendGestureData(gestureData)
 
     def appendGestureData(self, gestureData):
@@ -60,34 +58,6 @@ class GestureDetector:
                                                   running_mode=vision.RunningMode.LIVE_STREAM,
                                                   result_callback=self.print_result)
         self.recognizer = vision.GestureRecognizer.create_from_options(options)
-
-    # def run(self):
-    #     cam = cv.VideoCapture(0)
-    #
-    #     if not cam.isOpened():
-    #         print("Unable to access camera")  # kill the program if the camera is not accessed
-    #         cam.release()
-    #         exit()
-    #
-    #     frame_count = 0
-    #     while True:
-    #         frame_count += 1
-    #         retrieved, frame = cam.read()
-    #
-    #         if not retrieved:
-    #             print("Stream has likely ended")
-    #             break
-    #
-    #         mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
-    #         self.recognizer.recognize_async(mp_img, frame_count) # TODO Fix the timestamp ms thing instead of just returning the frame count
-    #
-    #         cv.imshow("stream", frame)
-    #         # https://stackoverflow.com/questions/5217519/what-does-opencvs-cvwaitkey-function-do <-- how waitKey works
-    #         if cv.waitKey(1) == ord("q"):  # gets the unicode value for q
-    #             break
-    #
-    #     cam.release()
-    #     cv.destroyAllWindows()
 
     def initStream(self):
         self.cam = cv.VideoCapture(0)
@@ -114,5 +84,3 @@ class GestureDetector:
             print("Stream has likely ended")
             return
         return frame
-
-# TODO: Fix issue where you can only get the gestures after you finish the program. Run simultaneously or smth
