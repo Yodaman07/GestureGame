@@ -18,9 +18,9 @@ class Player:
             pass
         elif gestureList[-1]["Name"] == "Open_Palm":
             self.x += move_direction # move right
-        elif gestureList[-1]["Name"] == "Victory":
-            self.x += -move_direction # move left
         elif gestureList[-1]["Name"] == "Closed_Fist":
+            self.x += -move_direction # move left
+        elif gestureList[-1]["Name"] == "Victory":
             self.y += -move_direction # move up (y increasing is going down)
         elif gestureList[-1]["Name"] == "Thumb_Down":
             self.y += move_direction # move down
