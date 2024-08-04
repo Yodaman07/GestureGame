@@ -1,4 +1,6 @@
 from GestureDetection import GestureDetector
+from game_elements.player import Player
+
 import pygame
 
 
@@ -12,18 +14,30 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.running = True
         self.gd = GestureDetector(10)
 
+        self.player: Player = None
+
         self.streamArea: pygame.Surface = None
         self.gestureIconLayout: pygame.Surface = None
-        self.iconOffset: int = None
+        self.gameSpace: pygame.Surface = None
+
+        self.iconOffset: int = None  # icon spacing
+        self.heightOffset: int = None  # divider from the stream and the game
 
     def initUI(self, gap):  # Initializes the UI and all necessary components
         self.gd.initStream()  # must run in order to get the camera properties from the stream
 
-        gestureLayoutWidth = (((self.gd.height / 4) + gap) * len(self.gd.possibleGestures)) - gap  # 7 gap sizes and 8 icon sizes
+        gestureLayoutWidth = (((self.gd.height / 4) + gap) * len(
+            self.gd.possibleGestures)) - gap  # 7 gap sizes and 8 icon sizes
 
         self.streamArea = pygame.Surface((self.gd.width, self.gd.height))
         self.gestureIconLayout = pygame.Surface((gestureLayoutWidth, self.gd.height / 4))
         self.gestureIconLayout.fill("green")
+
+        self.heightOffset = self.gd.height + self.gestureIconLayout.get_height() + 10 + 20
+        self.gameSpace = pygame.Surface((self.screen.get_width(), self.screen.get_height() - self.heightOffset))
+
+        self.player = Player(self.gameSpace)
+
         self.iconOffset = gap + (self.gd.height / 4)
 
     def addStream(self):
@@ -48,11 +62,20 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.screen.blit(self.streamArea, (0, 0))
         self.streamArea.blit(img, (0, 0))
 
+    def addGameContent(self):
+        self.gameSpace.fill("white")
+
+        self.player.parse_input_and_draw(self.gd.gestures)
+
+        self.screen.blit(self.gameSpace, (0, self.heightOffset))
+
     def display(self):
         self.addStream()
-        heightOffset = self.gd.height+self.gestureIconLayout.get_height()+10 + 20
+
         # Rect Order  -> (top_left_x, top_left_y, ending_x, ending_y)
-        pygame.draw.rect(self.screen, "black", pygame.Rect(0, heightOffset, self.screen.get_width(), 10))
+        pygame.draw.rect(self.screen, "black",
+                         pygame.Rect(0, self.heightOffset, self.screen.get_width(), 10))  # dividing line
+        self.addGameContent()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
