@@ -1,6 +1,5 @@
 from GestureDetection import GestureDetector
-from game_elements.player import Player
-from game_elements.grid import Grid
+from game_elements import *
 
 import pygame
 
@@ -40,6 +39,11 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         # 1000 pixels by 400 pixels (assuming shrink factor = 5)
 
         self.grid = Grid((self.screen.get_width(), self.screen.get_height() - self.heightOffset), 25)
+        self.grid.set((0, 9), "White")
+        self.grid.set((0, 11), "White")
+        self.grid.set((1, 10), "White")
+        self.grid.set((-1, 10), "White")
+        MazeGen(self.grid).findAvailableLocations((0,10))
 
         self.player = Player(self.grid)
 
@@ -68,8 +72,7 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.streamArea.blit(img, (0, 0))
 
     def addGameContent(self):
-        self.grid.fill("white")
-        self.grid.set((10, 2), "white")
+        # self.grid.set((10, 2), "white")
 
         # self.surfaceToGrid(self.gameSpace, 25)
         # self.player.parse_input_and_draw(self.gd.gestures)
