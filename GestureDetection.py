@@ -22,6 +22,7 @@ class GestureDetector:
         self.frame_count: int = 0
         self.cam: cv.VideoCapture = None
         self.shrinkFactor = 5  # factor to shrink the camera image from
+        # DO NOT CHANGE
         self.width: int = 0
         self.height: int = 0
 

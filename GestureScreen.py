@@ -1,5 +1,6 @@
 from GestureDetection import GestureDetector
 from game_elements.player import Player
+from game_elements.grid import Grid
 
 import pygame
 
@@ -18,7 +19,7 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
 
         self.streamArea: pygame.Surface = None
         self.gestureIconLayout: pygame.Surface = None
-        self.gameSpace: pygame.Surface = None
+        self.grid: Grid = None
 
         self.iconOffset: int = None  # icon spacing
         self.heightOffset: int = None  # divider from the stream and the game
@@ -34,9 +35,13 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.gestureIconLayout.fill("green")
 
         self.heightOffset = self.gd.height + self.gestureIconLayout.get_height() + 10 + 20
-        self.gameSpace = pygame.Surface((self.screen.get_width(), self.screen.get_height() - self.heightOffset))
 
-        self.player = Player(self.gameSpace)
+        # DON'T CHANGE the shrink factor in GestureDetection.py
+        # 1000 pixels by 400 pixels (assuming shrink factor = 5)
+
+        self.grid = Grid((self.screen.get_width(), self.screen.get_height() - self.heightOffset), 25)
+
+        self.player = Player(self.grid)
 
         self.iconOffset = gap + (self.gd.height / 4)
 
@@ -63,11 +68,13 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.streamArea.blit(img, (0, 0))
 
     def addGameContent(self):
-        self.gameSpace.fill("white")
+        self.grid.fill("white")
+        self.grid.set((10, 2), "white")
 
-        self.player.parse_input_and_draw(self.gd.gestures)
+        # self.surfaceToGrid(self.gameSpace, 25)
+        # self.player.parse_input_and_draw(self.gd.gestures)
 
-        self.screen.blit(self.gameSpace, (0, self.heightOffset))
+        self.screen.blit(self.grid, (0, self.heightOffset))
 
     def display(self):
         self.addStream()
