@@ -28,8 +28,13 @@ class Grid(pygame.Surface):
                 pygame.draw.rect(self, self.states[v_layer][h_layer], rect)
 
     def set(self, pos: (int, int), color: str): # increasing x is to the right, and increasing y is going down
+        if pos[0] < 0 or pos[1] < 0:
+            return
+
         self.states[pos[1]][pos[0]] = color
         self.generateGrid()
 
     def get(self, pos: (int, int)):
+        if pos[0] < 0 or pos[1] < 0:
+            raise IndexError
         return self.states[pos[1]][pos[0]]

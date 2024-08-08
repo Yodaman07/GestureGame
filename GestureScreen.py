@@ -41,9 +41,9 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.grid = Grid((self.screen.get_width(), self.screen.get_height() - self.heightOffset), 25)
         self.grid.set((0, 9), "White")
         self.grid.set((0, 11), "White")
-        self.grid.set((1, 10), "White")
         self.grid.set((-1, 10), "White")
-        MazeGen(self.grid).findAvailableLocations((0,10))
+        self.grid.set((1, 10), "White")
+        MazeGen(self.grid).findAvailableLocations((0, 10))
 
         self.player = Player(self.grid)
 

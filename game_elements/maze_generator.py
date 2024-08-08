@@ -41,4 +41,7 @@ class MazeGen:
         directionVectors = [(0, 1), (0, -1), (1, 0), (-1, 0)]
         for direction in directionVectors:
             newPos = (pos[0] + direction[0], pos[1] + direction[1])
-            print(self.grid.get(newPos))
+            try:
+                print(self.grid.get(newPos))
+            except IndexError:
+                print("NONE")
