@@ -30,10 +30,11 @@ class MazeGen:
             xCoord = random.randint(0, self.width)
             yCoord = possibleY[random.randint(0, 1)]
         coords = (xCoord, yCoord)
+        coords = (10, 2)
         print(f"Starting point: {coords}")
 
         self.coordinates.append(coords)
-        self.grid.set(coords, "White")
+        self.grid.set(coords, "white")
         return coords
 
     # Order:
@@ -47,17 +48,20 @@ class MazeGen:
         ahead = 1  # to check 1 ahead, to check 2 ahead, etc
 
         while ahead < 3:
+            availablePositions = []
 
-            for direction in directionVectors:
+            for c, direction in enumerate(directionVectors):
                 newPos = (pos[0] + direction[0] * ahead, pos[1] + direction[1] * ahead)
                 try:
                     color = self.grid.get(newPos)
-                    if color == "Black":
+                    if color == "black":
                         if ahead == 1:
-                            self.grid.set(newPos, "Green")
-                            availablePositions.append(newPos)
+                            self.grid.set(newPos, "green")
                         else:
-                            self.grid.set(newPos, "Purple")
+                            self.grid.set(newPos, "purple")
+
+                        finalPos = (pos[0] + direction[0], pos[1] + direction[1])
+                        availablePositions.append(finalPos)
                 except IndexError:
                     continue
                     # print("NONE")
