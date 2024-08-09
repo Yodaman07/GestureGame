@@ -16,21 +16,25 @@ class MazeGen:
         self.coordinates = []
         self.width = self.grid.grid_w
         self.height = self.grid.grid_h
+        print(f"Grid Width: {self.width}, Grid Height: {self.height}")
 
     def plotStart(self):
         xCoord, yCoord = 0, 0
         if random.randint(0, 1) == 1:  # 1 = Find starting point on the left or right
             # 0 = Find starting point on the top or bottom
-            possibleX = [0, self.width]
+            possibleX = [0, self.width - 1]
             xCoord = possibleX[random.randint(0, 1)]
             yCoord = random.randint(0, self.height)
         else:
-            possibleY = [0, self.height]
+            possibleY = [0, self.height - 1]
             xCoord = random.randint(0, self.width)
             yCoord = possibleY[random.randint(0, 1)]
+        coords = (xCoord, yCoord)
+        print(f"Starting point: {coords}")
 
-        self.coordinates.append((xCoord, yCoord))
-        self.grid.set((xCoord, yCoord), "white")
+        self.coordinates.append(coords)
+        self.grid.set(coords, "White")
+        return coords
 
     # Order:
     # 1. find available locations (is the square in front available, if so check if the one in front of that is, then take it)
@@ -39,9 +43,24 @@ class MazeGen:
 
     def findAvailableLocations(self, pos):
         directionVectors = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-        for direction in directionVectors:
-            newPos = (pos[0] + direction[0], pos[1] + direction[1])
-            try:
-                print(self.grid.get(newPos))
-            except IndexError:
-                print("NONE")
+        availablePositions = []
+        ahead = 1  # to check 1 ahead, to check 2 ahead, etc
+
+        while ahead < 3:
+
+            for direction in directionVectors:
+                newPos = (pos[0] + direction[0] * ahead, pos[1] + direction[1] * ahead)
+                try:
+                    color = self.grid.get(newPos)
+                    if color == "Black":
+                        if ahead == 1:
+                            self.grid.set(newPos, "Green")
+                            availablePositions.append(newPos)
+                        else:
+                            self.grid.set(newPos, "Purple")
+                except IndexError:
+                    continue
+                    # print("NONE")
+
+            ahead += 1
+        print(f"Possible next moves (green): {availablePositions}")

@@ -12,7 +12,7 @@ class Grid(pygame.Surface):
         for v in range(self.grid_h):
             self.states.append([])
             for h in range(self.grid_w):
-                self.states[v].append("black") # default grid color
+                self.states[v].append("Black") # default grid color
 
         self.shrinkRatio = shrinkRatio
         self.generateGrid()
