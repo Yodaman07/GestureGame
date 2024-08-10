@@ -18,23 +18,23 @@ class MazeGen:
         self.height = self.grid.grid_h
         print(f"Grid Width: {self.width}, Grid Height: {self.height}")
 
-    def plotStart(self):
+    def findStart(self, plot=False): # finds the start pos and adds it to the list
         xCoord, yCoord = 0, 0
         if random.randint(0, 1) == 1:  # 1 = Find starting point on the left or right
             # 0 = Find starting point on the top or bottom
             possibleX = [0, self.width - 1]
             xCoord = possibleX[random.randint(0, 1)]
-            yCoord = random.randint(0, self.height)
+            yCoord = random.randint(0, self.height-1)
         else:
             possibleY = [0, self.height - 1]
-            xCoord = random.randint(0, self.width)
+            xCoord = random.randint(0, self.width-1)
             yCoord = possibleY[random.randint(0, 1)]
         coords = (xCoord, yCoord)
-        coords = (10, 2)
+        # coords = (10, 2)
         print(f"Starting point: {coords}")
 
         self.coordinates.append(coords)
-        self.grid.set(coords, "white")
+        if plot: self.grid.set(coords, "white")
         return coords
 
     # Order:
@@ -42,29 +42,66 @@ class MazeGen:
     # 2. Randomly choose available location to move to, and move
     # 3. Continue, if there are no available locations, backtrack, slowly move down the list, constantly checking for available locations
 
-    def findAvailableLocations(self, pos):
+    def evaluatePossibleCoord(self, coord, visualize,
+                              originalVector) -> bool:  # evaluate the joined edges of each of the possible coordinates
+        #     o
+        #   o x o
+        # x is the possible coordinate, and o is all the places that will be checked
+        vector_1 = (originalVector[1], originalVector[0])  # ex, this would be the right o
+        vector_2 = (-originalVector[1], -originalVector[0])  # ex, this would be the left o
+        vector_3 = (originalVector[0], originalVector[1])  # ex, this would be the top o
+        vectorsToCheck = [vector_1, vector_2, vector_3]
+
+        canMove = True
+
+        for vector in vectorsToCheck:
+            posToCheck = (coord[0] + vector[0], coord[1] + vector[1])
+            try:
+                if self.grid.get(posToCheck) != "white":
+                    if visualize:
+                        self.grid.set(posToCheck, "purple")
+                else:
+                    canMove = False
+            except IndexError:
+                continue
+
+        return canMove
+
+    def findAvailableLocations(self, pos, visualize):
         directionVectors = [(0, 1), (0, -1), (1, 0), (-1, 0)]
         availablePositions = []
-        ahead = 1  # to check 1 ahead, to check 2 ahead, etc
 
-        while ahead < 3:
-            availablePositions = []
+        for direction in directionVectors:
+            newPos = (pos[0] + direction[0], pos[1] + direction[1])
 
-            for c, direction in enumerate(directionVectors):
-                newPos = (pos[0] + direction[0] * ahead, pos[1] + direction[1] * ahead)
-                try:
-                    color = self.grid.get(newPos)
-                    if color == "black":
-                        if ahead == 1:
-                            self.grid.set(newPos, "green")
-                        else:
-                            self.grid.set(newPos, "purple")
+            try:
+                color = self.grid.get(newPos)
+                if color == "black":  # pixel isn't taken
+                    if visualize:
+                        self.grid.set(newPos, "green")
+                    availablePos = self.evaluatePossibleCoord(newPos, True, direction)
+                    if availablePos: availablePositions.append(newPos)
 
-                        finalPos = (pos[0] + direction[0], pos[1] + direction[1])
-                        availablePositions.append(finalPos)
-                except IndexError:
-                    continue
-                    # print("NONE")
+            except IndexError:
+                continue
+                # print("NONE")
 
-            ahead += 1
-        print(f"Possible next moves (green): {availablePositions}")
+        print(f"At: {pos}, Possible next moves (green): {availablePositions}")
+        return availablePositions
+
+    def generate(self):  # should be called repeatedly in a loop
+        self.grid.set(self.coordinates[-1], "white")
+
+        positions = self.findAvailableLocations(self.coordinates[-1], visualize=True)
+        num = random.randint(0, len(positions)-1) # random number <-- PLACE BREAKPOINT HERE
+
+        newPos = positions[num]
+        self.coordinates.append(newPos)
+
+        print(f"{newPos} Selected")
+
+
+
+
+
+

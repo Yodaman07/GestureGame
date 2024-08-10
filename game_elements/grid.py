@@ -12,7 +12,7 @@ class Grid(pygame.Surface):
         for v in range(self.grid_h):
             self.states.append([])
             for h in range(self.grid_w):
-                self.states[v].append("black") # default grid color
+                self.states[v].append("black")  # default grid color
 
         self.shrinkRatio = shrinkRatio
         self.generateGrid()
@@ -27,7 +27,7 @@ class Grid(pygame.Surface):
                                    self.shrinkRatio)
                 pygame.draw.rect(self, self.states[v_layer][h_layer], rect)
 
-    def set(self, pos: (int, int), color: str): # increasing x is to the right, and increasing y is going down
+    def set(self, pos: (int, int), color: str):  # increasing x is to the right, and increasing y is going down
         if pos[0] < 0 or pos[1] < 0:
             return
 
@@ -38,3 +38,10 @@ class Grid(pygame.Surface):
         if pos[0] < 0 or pos[1] < 0:
             raise IndexError
         return self.states[pos[1]][pos[0]]
+
+    def resetColorMarkers(self):  # resets any color that isn't black or white
+        for yval, y_list in enumerate(self.states):
+            for index, color in enumerate(y_list):
+                if color == "green" or color == "purple":
+                    self.states[yval][index] = "black"
+
