@@ -79,7 +79,7 @@ class MazeGen:
                 if color == "black":  # pixel isn't taken
                     if visualize:
                         self.grid.set(newPos, "green")
-                    availablePos = self.evaluatePossibleCoord(newPos, True, direction)
+                    availablePos = self.evaluatePossibleCoord(newPos, visualize, direction)
                     if availablePos: availablePositions.append(newPos)
 
             except IndexError:
