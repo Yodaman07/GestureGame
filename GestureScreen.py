@@ -75,15 +75,14 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.streamArea.blit(img, (0, 0))
 
     def addGameContent(self):
-        self.grid.resetColorMarkers()
-        if self.canGenerate:
-            self.canGenerate = self.mg.generate()  # coordinates are stored in self.mg
+        if self.canGenerate: self.canGenerate = self.mg.generate()  # coordinates are stored in self.mg
+        else: self.grid.resetColorMarkers()
 
         # self.player.parse_input_and_draw(self.gd.gestures)
         self.screen.blit(self.grid, (0, self.heightOffset))
 
     def display(self):
-        # self.addStream()
+        self.addStream()
 
         # Rect Order  -> (top_left_x, top_left_y, ending_x, ending_y)
         pygame.draw.rect(self.screen, "black",

@@ -90,11 +90,14 @@ class MazeGen:
         return availablePositions
 
     def generate(self) -> bool:  # should be called repeatedly in a loop, returns if the generation was a success
+        self.grid.resetColorMarkers()
         self.grid.set(self.coordinates[-1], "white")
 
         positions = self.findAvailableLocations(self.coordinates[-1], visualize=True)
         if positions == []: # backtracking time!!!!!!
             self.coordinates.pop()
+            if self.coordinates == []:
+                return False
             result = self.generate()
             return result
         num = random.randint(0, len(positions)-1) # random number <-- PLACE BREAKPOINT HERE

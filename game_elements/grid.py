@@ -44,4 +44,5 @@ class Grid(pygame.Surface):
             for index, color in enumerate(y_list):
                 if color == "green" or color == "purple":
                     self.states[yval][index] = "black"
+                    self.set((index, yval), "black")
 
