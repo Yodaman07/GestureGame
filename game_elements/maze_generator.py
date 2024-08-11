@@ -89,16 +89,21 @@ class MazeGen:
         print(f"At: {pos}, Possible next moves (green): {availablePositions}")
         return availablePositions
 
-    def generate(self):  # should be called repeatedly in a loop
+    def generate(self) -> bool:  # should be called repeatedly in a loop, returns if the generation was a success
         self.grid.set(self.coordinates[-1], "white")
 
         positions = self.findAvailableLocations(self.coordinates[-1], visualize=True)
+        if positions == []: # backtracking time!!!!!!
+            self.coordinates.pop()
+            result = self.generate()
+            return result
         num = random.randint(0, len(positions)-1) # random number <-- PLACE BREAKPOINT HERE
 
         newPos = positions[num]
         self.coordinates.append(newPos)
 
         print(f"{newPos} Selected")
+        return True
 
 
 

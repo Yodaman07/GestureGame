@@ -15,7 +15,8 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.gd = GestureDetector(10)
 
         self.player: Player = None
-        self.mg : MazeGen = None
+        self.mg: MazeGen = None
+        self.canGenerate: bool = True
 
         self.streamArea: pygame.Surface = None
         self.gestureIconLayout: pygame.Surface = None
@@ -75,7 +76,8 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
 
     def addGameContent(self):
         self.grid.resetColorMarkers()
-        self.mg.generate() # coordinates are stored in self.mg
+        if self.canGenerate:
+            self.canGenerate = self.mg.generate()  # coordinates are stored in self.mg
 
         # self.player.parse_input_and_draw(self.gd.gestures)
         self.screen.blit(self.grid, (0, self.heightOffset))
