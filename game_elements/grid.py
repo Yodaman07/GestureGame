@@ -46,3 +46,12 @@ class Grid(pygame.Surface):
                     self.states[yval][index] = "black"
                     self.set((index, yval), "black")
 
+
+    def resetAll(self):
+        for yval, y_list in enumerate(self.states):
+            for index, color in enumerate(y_list):
+                self.states[yval][index] = "black"
+                self.set((index, yval), "black")
+
+        self.generateGrid()
+

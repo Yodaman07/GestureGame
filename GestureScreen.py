@@ -2,6 +2,10 @@ from GestureDetection import GestureDetector
 from game_elements import *
 
 import pygame
+import pygame_widgets
+from pygame_widgets.button import Button
+from pygame_widgets.textbox import TextBox
+
 
 
 class GestureScreen:  # sets up a pygame screen connected to a live stream, detecting your current hand gesture
@@ -16,11 +20,18 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
 
         self.player: Player = None
         self.mg: MazeGen = None
-        self.canGenerate: bool = True
+        self.canGenerate: bool = False
+        self.generating : bool = False
 
         self.streamArea: pygame.Surface = None
         self.gestureIconLayout: pygame.Surface = None
+        self.buttonSurface: pygame.Surface = None
         self.grid: Grid = None
+
+        self.btn = Button = None
+        self.txtBox :TextBox = None
+
+        self.readyToPlay : bool = False
 
         self.iconOffset: int = None  # icon spacing
         self.heightOffset: int = None  # divider from the stream and the game
@@ -37,16 +48,18 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
 
         self.heightOffset = self.gd.height + self.gestureIconLayout.get_height() + 10 + 20
 
-        # DON'T CHANGE the shrink factor in GestureDetection.py
-        # 1000 pixels by 400 pixels (assuming shrink factor = 5)
+        self.genBtn = Button(self.screen, self.gd.width *1.75, self.heightOffset / 2, 250, 50, radius=20,
+                          text="Generate Maze", fontSize=20,
+                          inactiveColour=(200, 50, 0), onClick=lambda: self.canGen())
+
+        self.txtBox = TextBox(self.screen, self.gd.width *1.75, self.heightOffset / 2+75, 250, 50, fontSize=30,
+                   textColour=(0, 200, 0), radius=10, borderThickness=5)
 
         self.grid = Grid((self.screen.get_width(), self.screen.get_height() - self.heightOffset), 25)
-        # self.grid.set((12, 2), "white")
+
+        # DON'T CHANGE the shrink factor in GestureDetection.py
 
         self.mg = MazeGen(self.grid)
-        self.mg.findStart(False)
-        # self.grid.set((18, 15), "white")
-        # self.mg.findAvailableLocations((18, 15), True)
 
         self.player = Player(self.grid)
 
@@ -74,9 +87,19 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.screen.blit(self.streamArea, (0, 0))
         self.streamArea.blit(img, (0, 0))
 
+    def canGen(self):
+        if self.generating == False:
+            self.grid.resetAll()
+            self.mg.findStart(False)
+            self.canGenerate = True
+            self.generating = True
+
     def addGameContent(self):
-        if self.canGenerate: self.canGenerate = self.mg.generate()  # coordinates are stored in self.mg
-        else: self.grid.resetColorMarkers()
+        if self.canGenerate:
+            self.canGenerate = self.mg.generate()  # coordinates are stored in self.mg
+        else:
+            self.grid.resetColorMarkers()
+            self.generating = False
 
         # self.player.parse_input_and_draw(self.gd.gestures)
         self.screen.blit(self.grid, (0, self.heightOffset))
@@ -85,14 +108,17 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.addStream()
 
         # Rect Order  -> (top_left_x, top_left_y, ending_x, ending_y)
-        pygame.draw.rect(self.screen, "black",
-                         pygame.Rect(0, self.heightOffset, self.screen.get_width(), 10))  # dividing line
+        pygame.draw.rect(self.screen, "red",
+                         pygame.Rect(0, self.heightOffset - 10, self.screen.get_width(), 10))  # dividing line
         self.addGameContent()
 
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        for event in events:
             if event.type == pygame.QUIT:
                 self.running = False
                 break
+
+        pygame_widgets.update(events)
 
         pygame.display.flip()
         self.clock.tick(60)
