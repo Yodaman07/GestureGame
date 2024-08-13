@@ -7,12 +7,12 @@ from pygame_widgets.button import Button
 from pygame_widgets.textbox import TextBox
 
 
-
 class GestureScreen:  # sets up a pygame screen connected to a live stream, detecting your current hand gesture
     def __init__(self):
         pygame.init()
 
         self.screen = pygame.display.set_mode((1000, 700))
+        pygame.display.set_caption("GestureGame")
 
         self.clock = pygame.time.Clock()
         self.running = True
@@ -21,7 +21,7 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.player: Player = None
         self.mg: MazeGen = None
         self.canGenerate: bool = False
-        self.generating : bool = False
+        self.generating: bool = False
 
         self.streamArea: pygame.Surface = None
         self.gestureIconLayout: pygame.Surface = None
@@ -29,9 +29,11 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.grid: Grid = None
 
         self.btn = Button = None
-        self.txtBox :TextBox = None
+        self.font = pygame.font.SysFont("Serif", 32)
+        self.text = None
+        self.canUpdateTitle = False # Changes title from default val to boolean controlled val
 
-        self.readyToPlay : bool = False
+        self.readyToPlay: bool = False
 
         self.iconOffset: int = None  # icon spacing
         self.heightOffset: int = None  # divider from the stream and the game
@@ -48,12 +50,12 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
 
         self.heightOffset = self.gd.height + self.gestureIconLayout.get_height() + 10 + 20
 
-        self.genBtn = Button(self.screen, self.gd.width *1.75, self.heightOffset / 2, 250, 50, radius=20,
-                          text="Generate Maze", fontSize=20,
-                          inactiveColour=(200, 50, 0), onClick=lambda: self.canGen())
+        self.genBtn = Button(self.screen, self.gd.width * 1.75, self.heightOffset / 2, 250, 50, radius=20,
+                             text="Generate Maze", fontSize=20,
+                             inactiveColour=(200, 50, 0), onClick=lambda: self.canGen())
 
-        self.txtBox = TextBox(self.screen, self.gd.width *1.75, self.heightOffset / 2+75, 250, 50, fontSize=30,
-                   textColour=(0, 200, 0), radius=10, borderThickness=5)
+        self.text = self.font.render(f"Status: Not Generated", True, "red") # default
+
 
         self.grid = Grid((self.screen.get_width(), self.screen.get_height() - self.heightOffset), 25)
 
@@ -88,6 +90,7 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.streamArea.blit(img, (0, 0))
 
     def canGen(self):
+        self.canUpdateTitle = True
         if self.generating == False:
             self.grid.resetAll()
             self.mg.findStart(False)
@@ -99,12 +102,18 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
             self.canGenerate = self.mg.generate()  # coordinates are stored in self.mg
         else:
             self.grid.resetColorMarkers()
-            self.generating = False
+            if self.mg.coordinates == []:
+                self.generating = False
 
         # self.player.parse_input_and_draw(self.gd.gestures)
+        self.screen.blit(self.text, (self.gd.width * 1.75, (self.heightOffset / 2) + 75))
         self.screen.blit(self.grid, (0, self.heightOffset))
 
     def display(self):
+        if self.canUpdateTitle:
+            self.text = self.font.render(f"Status: {'Generated' if not self.generating else 'Generating'}", True,
+                                     "green" if not self.generating else "red")
+
         self.addStream()
 
         # Rect Order  -> (top_left_x, top_left_y, ending_x, ending_y)
