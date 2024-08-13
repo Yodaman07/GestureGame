@@ -63,7 +63,7 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
 
         self.mg = MazeGen(self.grid)
 
-        self.player = Player(self.grid)
+        self.player = Player(self.grid, size=10)
 
         self.iconOffset = gap + (self.gd.height / 4)
 
@@ -105,7 +105,10 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
             if self.mg.coordinates == []:
                 self.generating = False
 
-        # self.player.parse_input_and_draw(self.gd.gestures)
+        if not self.generating and self.canUpdateTitle:
+            self.grid.generateGrid()
+            self.player.parse_input_and_draw(self.gd.gestures)
+
         self.screen.blit(self.text, (self.gd.width * 1.75, (self.heightOffset / 2) + 75))
         self.screen.blit(self.grid, (0, self.heightOffset))
 
