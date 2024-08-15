@@ -4,7 +4,6 @@ from game_elements import *
 import pygame
 import pygame_widgets
 from pygame_widgets.button import Button
-from pygame_widgets.textbox import TextBox
 
 
 class GestureScreen:  # sets up a pygame screen connected to a live stream, detecting your current hand gesture
@@ -63,8 +62,6 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
 
         self.mg = MazeGen(self.grid)
 
-        self.player = Player(self.grid, size=10)
-
         self.iconOffset = gap + (self.gd.height / 4)
 
     def addStream(self):
@@ -93,7 +90,12 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.canUpdateTitle = True
         if self.generating == False:
             self.grid.resetAll()
-            self.mg.findStart(False)
+            start = self.mg.findStart(False)
+
+            sr = self.grid.shrinkRatio
+            playerStart = ((start[0] * sr) + (sr / 2), (start[1] * sr) + (sr / 2))
+            self.player = Player(self.grid, playerStart, size=9)
+
             self.canGenerate = True
             self.generating = True
 
@@ -103,11 +105,13 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         else:
             self.grid.resetColorMarkers()
             if self.mg.coordinates == []:
+                if self.canUpdateTitle: self.mg.addStartAndEnd()
                 self.generating = False
 
         if not self.generating and self.canUpdateTitle:
-            self.grid.generateGrid()
+            self.grid.generateGrid(self.player)
             self.player.parse_input_and_draw(self.gd.gestures)
+
 
         self.screen.blit(self.text, (self.gd.width * 1.75, (self.heightOffset / 2) + 75))
         self.screen.blit(self.grid, (0, self.heightOffset))

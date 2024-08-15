@@ -14,6 +14,8 @@ class MazeGen:
         # width and height in grid spaces
         self.grid = grid
         self.coordinates = []
+        self.startPos = ()
+        self.endPos = ()
         self.width = self.grid.grid_w
         self.height = self.grid.grid_h
         print(f"Grid Width: {self.width}, Grid Height: {self.height}")
@@ -34,6 +36,7 @@ class MazeGen:
         print(f"Starting point: {coords}")
 
         self.coordinates.append(coords)
+        self.startPos = coords
         if plot: self.grid.set(coords, "white")
         return coords
 
@@ -95,9 +98,11 @@ class MazeGen:
 
         positions = self.findAvailableLocations(self.coordinates[-1], visualize=True)
         if positions == []: # backtracking time!!!!!!
+            if len(self.coordinates) == 1:
+                print(self.coordinates)
+                self.endPos = self.coordinates[0]
             self.coordinates.pop()
-            if self.coordinates == []:
-                return False
+            if self.coordinates == []: return False
             result = self.generate()
             return result
         num = random.randint(0, len(positions)-1) # random number <-- PLACE BREAKPOINT HERE
@@ -108,6 +113,9 @@ class MazeGen:
         print(f"{newPos} Selected")
         return True
 
+    def addStartAndEnd(self):
+        self.grid.set(self.startPos, "yellow")
+        self.grid.set(self.endPos, "yellow")
 
 
 
