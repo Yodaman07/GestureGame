@@ -10,6 +10,8 @@ class Player:
         self.size = size  # radius of player circle
         self.x, self.y = (startPos[0], startPos[1])
         self.collider = self.getCollider()
+        self.move_direction = 1
+        self.gestureList = None
 
     def draw(self):  # to be placed in game loop
         pygame.draw.circle(self.screen, "green", (self.x, self.y), self.size)
@@ -21,18 +23,28 @@ class Player:
         return self.collider
 
     def parse_input_and_draw(self, gestureList):  # moves the player appropriately + draws and updates movement
-        move_direction = 1
         if not gestureList: return
-        if gestureList[-1]['Name'] == None:
+        self.gestureList = gestureList
+        if self.gestureList[-1]['Name'] == None:
             pass
-        elif gestureList[-1]["Name"] == "Open_Palm":
-            self.x += move_direction  # move right
-        elif gestureList[-1]["Name"] == "Closed_Fist":
-            self.x += -move_direction  # move left
-        elif gestureList[-1]["Name"] == "Victory":
-            self.y += -move_direction  # move up (y increasing is going down)
-        elif gestureList[-1]["Name"] == "Thumb_Down":
-            self.y += move_direction  # move down
-        elif gestureList[-1]["Name"] == "Pointing_Up":
+        elif self.gestureList[-1]["Name"] == "Open_Palm":
+            self.x += self.move_direction  # move right
+        elif self.gestureList[-1]["Name"] == "Closed_Fist":
+            self.x += -self.move_direction  # move left
+        elif self.gestureList[-1]["Name"] == "Victory":
+            self.y += -self.move_direction  # move up (y increasing is going down)
+        elif self.gestureList[-1]["Name"] == "Thumb_Down":
+            self.y += self.move_direction  # move down
+        elif self.gestureList[-1]["Name"] == "Pointing_Up":
             self.x, self.y = (self.size, self.size)
         self.draw()
+
+    def collided(self):
+        if self.gestureList[-1]["Name"] == "Open_Palm":
+            self.x -= self.move_direction
+        elif self.gestureList[-1]["Name"] == "Closed_Fist":
+            self.x -= -self.move_direction
+        elif self.gestureList[-1]["Name"] == "Victory":
+            self.y -= -self.move_direction
+        elif self.gestureList[-1]["Name"] == "Thumb_Down":
+            self.y -= self.move_direction

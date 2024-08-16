@@ -31,7 +31,9 @@ class Grid(pygame.Surface):
                 if player is not None and self.get((h_layer, v_layer)) == "black":
 
                     doesCollide = rect.colliderect(player.collider)
-                    if doesCollide: print("COLLIDE")
+                    if doesCollide:
+                        player.collided()
+                        # https://www.youtube.com/watch?v=W9uKzPFS1CI
 
                 pygame.draw.rect(self, self.states[v_layer][h_layer], rect)
 
