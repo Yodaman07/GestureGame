@@ -30,7 +30,7 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.btn = Button = None
         self.font = pygame.font.SysFont("Serif", 32)
         self.text = None
-        self.canUpdateTitle = False # Changes title from default val to boolean controlled val
+        self.canUpdateTitle = False  # Changes title from default val to boolean controlled val
 
         self.readyToPlay: bool = False
 
@@ -53,8 +53,7 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
                              text="Generate Maze", fontSize=20,
                              inactiveColour=(200, 50, 0), onClick=lambda: self.canGen())
 
-        self.text = self.font.render(f"Status: Not Generated", True, "red") # default
-
+        self.text = self.font.render(f"Status: Not Generated", True, "red")  # default
 
         self.grid = Grid((self.screen.get_width(), self.screen.get_height() - self.heightOffset), 25)
 
@@ -109,9 +108,8 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
                 self.generating = False
 
         if not self.generating and self.canUpdateTitle:
-            self.grid.generateGrid(self.player)
+            self.grid.generateGrid(self.player, self.gd.gestures)
             self.player.parse_input_and_draw(self.gd.gestures)
-
 
         self.screen.blit(self.text, (self.gd.width * 1.75, (self.heightOffset / 2) + 75))
         self.screen.blit(self.grid, (0, self.heightOffset))
@@ -119,7 +117,7 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
     def display(self):
         if self.canUpdateTitle:
             self.text = self.font.render(f"Status: {'Generated' if not self.generating else 'Generating'}", True,
-                                     "green" if not self.generating else "red")
+                                         "green" if not self.generating else "red")
 
         self.addStream()
 

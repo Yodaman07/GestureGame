@@ -32,7 +32,8 @@ class Grid(pygame.Surface):
 
                     doesCollide = rect.colliderect(player.collider)
                     if doesCollide:
-                        player.collided()
+                        player.collided(rect)
+
                         # https://www.youtube.com/watch?v=W9uKzPFS1CI
 
                 pygame.draw.rect(self, self.states[v_layer][h_layer], rect)
