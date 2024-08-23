@@ -18,8 +18,7 @@ class Grid(pygame.Surface):
         self.shrinkRatio = shrinkRatio
         self.generateGrid()
 
-    def generateGrid(self, player: Player = None,
-                     gestures=None):  # shrinkRatio is how many pixels per grid space, player is for adding the collision
+    def generateGrid(self, player: Player = None):  # shrinkRatio is how many pixels per grid space, player is for adding the collision
         # ex: if a 1000x400 pixel Surface has shrinkRatio=10, the dimensions of the grid squares will be 100x40
         # https://stackoverflow.com/questions/33963361/how-to-make-a-grid-in-pygame <-- drawing grids
 
@@ -29,14 +28,13 @@ class Grid(pygame.Surface):
                                    self.shrinkRatio)
 
                 if player is not None and self.get((h_layer, v_layer)) == "black":
-
-                    doesCollide = rect.colliderect(player.collider)
-                    if doesCollide:
+                    if rect.colliderect(player.collider):
                         player.collided(rect)
 
                         # https://www.youtube.com/watch?v=W9uKzPFS1CI
 
                 pygame.draw.rect(self, self.states[v_layer][h_layer], rect)
+
 
     def set(self, pos: (int, int), color: str):  # increasing x is to the right, and increasing y is going down
         if pos[0] < 0 or pos[1] < 0:

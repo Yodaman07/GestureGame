@@ -55,7 +55,8 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
 
         self.text = self.font.render(f"Status: Not Generated", True, "red")  # default
 
-        self.grid = Grid((self.screen.get_width(), self.screen.get_height() - self.heightOffset), 25)
+        sr = 25
+        self.grid = Grid((self.screen.get_width(), self.screen.get_height() - self.heightOffset), sr)
 
         # DON'T CHANGE the shrink factor in GestureDetection.py
 
@@ -108,8 +109,12 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
                 self.generating = False
 
         if not self.generating and self.canUpdateTitle:
-            self.grid.generateGrid(self.player, self.gd.gestures)
+            self.grid.generateGrid(self.player)
             self.player.parse_input_and_draw(self.gd.gestures)
+            # if player isn't fully apart of the grid
+            if not self.grid.get_rect().contains(self.player.collider):
+                # https://www.reddit.com/r/pygame/comments/1bp3fth/how_to_check_if_the_rect_moves_out_of_the_screen/
+                self.player.collided(self.grid.get_rect(), outOfBounds=True)
 
         self.screen.blit(self.text, (self.gd.width * 1.75, (self.heightOffset / 2) + 75))
         self.screen.blit(self.grid, (0, self.heightOffset))
