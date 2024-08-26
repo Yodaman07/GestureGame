@@ -15,22 +15,27 @@ class MazeGen:
         self.grid = grid
         self.coordinates = []
         self.startPos = ()
-        self.endPos = ()
+        self.endPos = [0, 0]  # coordinate pair
         self.width = self.grid.grid_w
         self.height = self.grid.grid_h
+        self.startMode = ""  # horizontal or vertical
         print(f"Grid Width: {self.width}, Grid Height: {self.height}")
 
-    def findStart(self, plot=False): # finds the start pos and adds it to the list
+    def findStart(self, plot=False):  # finds the start pos and adds it to the list
         xCoord, yCoord = 0, 0
         if random.randint(0, 1) == 1:  # 1 = Find starting point on the left or right
             # 0 = Find starting point on the top or bottom
             possibleX = [0, self.width - 1]
             xCoord = possibleX[random.randint(0, 1)]
-            yCoord = random.randint(0, self.height-1)
+            yCoord = random.randint(0, self.height - 1)
+            self.endPos[0] = 0 if xCoord == (self.width - 1) else (self.width - 1)
+            self.startMode = "horizontal"
         else:
             possibleY = [0, self.height - 1]
-            xCoord = random.randint(0, self.width-1)
+            xCoord = random.randint(0, self.width - 1)
             yCoord = possibleY[random.randint(0, 1)]
+            self.endPos[1] = 0 if yCoord == (self.height - 1) else (self.height - 1)
+            self.startMode = "vertical"
         coords = (xCoord, yCoord)
         # coords = (10, 2)
         print(f"Starting point: {coords}")
@@ -97,15 +102,15 @@ class MazeGen:
         self.grid.set(self.coordinates[-1], "white")
 
         positions = self.findAvailableLocations(self.coordinates[-1], visualize=True)
-        if positions == []: # backtracking time!!!!!!
+        if positions == []:  # backtracking time!!!!!!
             if len(self.coordinates) == 1:
                 print(self.coordinates)
-                self.endPos = self.coordinates[0]
+                self.findEndPoints()
             self.coordinates.pop()
             if self.coordinates == []: return False
             result = self.generate()
             return result
-        num = random.randint(0, len(positions)-1) # random number <-- PLACE BREAKPOINT HERE
+        num = random.randint(0, len(positions) - 1)  # random number <-- PLACE BREAKPOINT HERE
 
         newPos = positions[num]
         self.coordinates.append(newPos)
@@ -114,10 +119,21 @@ class MazeGen:
         return True
 
     def addStartAndEnd(self):
-        self.grid.set(self.startPos, "yellow")
-        self.grid.set(self.endPos, "yellow")
+        # self.grid.set(self.startPos, "yellow")
+        self.grid.set((self.endPos[0], self.endPos[1]), "yellow")
 
-
-
-
-
+    def findEndPoints(self):
+        if self.startMode == "horizontal":
+            possibleY = []
+            for i in range(self.height):
+                color = self.grid.get((self.endPos[0], i))
+                if color == "white": possibleY.append(i)
+            index = random.randint(0, len(possibleY)) - 1
+            self.endPos[1] = possibleY[index]
+        else:
+            possibleX = []
+            for i in range(self.width):
+                color = self.grid.get((i, self.endPos[1]))
+                if color == "white": possibleX.append(i)
+            index = random.randint(0, len(possibleX)) - 1
+            self.endPos[0] = possibleX[index]

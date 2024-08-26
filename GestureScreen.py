@@ -111,7 +111,7 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         if not self.generating and self.canUpdateTitle:
             self.grid.generateGrid(self.player)
             self.player.parse_input_and_draw(self.gd.gestures)
-            # if player isn't fully apart of the grid
+            # if player isn't fully a part of the grid
             if not self.grid.get_rect().contains(self.player.collider):
                 # https://www.reddit.com/r/pygame/comments/1bp3fth/how_to_check_if_the_rect_moves_out_of_the_screen/
                 self.player.collided(self.grid.get_rect(), outOfBounds=True)
