@@ -32,7 +32,7 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.text = None
         self.canUpdateTitle = False  # Changes title from default val to boolean controlled val
 
-        self.readyToPlay: bool = False
+        self.gameFinishedOverlay: pygame.Surface = None
 
         self.iconOffset: int = None  # icon spacing
         self.heightOffset: int = None  # divider from the stream and the game
@@ -57,6 +57,9 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
 
         sr = 25
         self.grid = Grid((self.screen.get_width(), self.screen.get_height() - self.heightOffset), sr)
+        self.grid.fill("white")
+        self.gameFinishedOverlay = pygame.Surface(
+            (self.screen.get_width(), self.screen.get_height() - self.heightOffset))
 
         # DON'T CHANGE the shrink factor in GestureDetection.py
 
@@ -119,7 +122,26 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.screen.blit(self.text, (self.gd.width * 1.75, (self.heightOffset / 2) + 75))
         self.screen.blit(self.grid, (0, self.heightOffset))
 
+    def addGameFinishedOverlay(self):
+        self.gameFinishedOverlay.fill("black")
+        self.gameFinishedOverlay.set_alpha(150)
+        finishedTxt = self.font.render("Finished!", True, "green")
+
+        txt_offset_w = finishedTxt.get_width() / 2
+        txt_offset_h = finishedTxt.get_height() / 2
+        overlay_offset_w = self.gameFinishedOverlay.get_width() / 2
+        overlay_offset_h = self.gameFinishedOverlay.get_height() / 2
+        # txtArea = pygame.Surface((finishedTxt.get_width() + 40, finishedTxt.get_height() + 40))
+
+        r = pygame.Rect(overlay_offset_w - txt_offset_w, overlay_offset_h - txt_offset_h, finishedTxt.get_width(),
+                        finishedTxt.get_height())
+        pygame.draw.rect(self.gameFinishedOverlay, "white", r.inflate(20, 20), border_radius=50)
+
+        self.gameFinishedOverlay.blit(finishedTxt, (overlay_offset_w - txt_offset_w, overlay_offset_h - txt_offset_h))
+        self.screen.blit(self.gameFinishedOverlay, (0, self.heightOffset))
+
     def display(self):
+
         if self.canUpdateTitle:
             self.text = self.font.render(f"Status: {'Generated' if not self.generating else 'Generating'}", True,
                                          "green" if not self.generating else "red")
@@ -130,6 +152,8 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         pygame.draw.rect(self.screen, "red",
                          pygame.Rect(0, self.heightOffset - 10, self.screen.get_width(), 10))  # dividing line
         self.addGameContent()
+
+        self.addGameFinishedOverlay()
 
         events = pygame.event.get()
         for event in events:
