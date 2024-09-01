@@ -69,14 +69,18 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
 
     def addStream(self):
         addedOffset = 0
+        self.gestureIconLayout.fill("white")
         for gesture in self.gd.possibleGestures:
-            color = "purple"
+            name = gesture
             if self.gd.gestures != []:
                 if self.gd.gestures[-1]["Name"] == gesture:
-                    color = "red"  # red means detected
+                    name = gesture + "_f" # filled
+            img = pygame.image.load(f"icons/{name}.png").convert_alpha()
+            rect = pygame.Rect(addedOffset, 0, self.gd.height / 4, self.gd.height / 4)
 
-            pygame.draw.rect(self.gestureIconLayout, color,
-                             pygame.Rect(addedOffset, 0, self.gd.height / 4, self.gd.height / 4))
+            img = pygame.transform.scale(img, (self.gd.height / 4, self.gd.height / 4))
+
+            self.gestureIconLayout.blit(img, rect)
             addedOffset += self.iconOffset
 
         currentFrame = self.gd.getCurrentFrame()
@@ -130,7 +134,6 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         txt_offset_h = finishedTxt.get_height() / 2
         overlay_offset_w = self.gameFinishedOverlay.get_width() / 2
         overlay_offset_h = self.gameFinishedOverlay.get_height() / 2
-        # txtArea = pygame.Surface((finishedTxt.get_width(), finishedTxt.get_height()))
 
         r = pygame.Rect(overlay_offset_w - txt_offset_w, (overlay_offset_h - txt_offset_h)+self.heightOffset, finishedTxt.get_width(),
                         finishedTxt.get_height())
@@ -141,11 +144,9 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
                          (overlay_offset_w - txt_offset_w, (overlay_offset_h - txt_offset_h) + self.heightOffset))
 
     def display(self):
-
         if self.canUpdateTitle:
             self.text = self.font.render(f"Status: {'Generated' if not self.generating else 'Generating'}", True,
                                          "green" if not self.generating else "red")
-
         self.addStream()
 
         # Rect Order  -> (top_left_x, top_left_y, ending_x, ending_y)

@@ -1,5 +1,6 @@
 from GestureScreen import GestureScreen
 import pygame
+# Gesture Game: Made by Ayaan Irshad
 
 gs = GestureScreen()
 gs.initUI(10)

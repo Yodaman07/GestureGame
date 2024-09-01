@@ -16,7 +16,7 @@ class GestureDetector:
         self.maxGestureCount = gestureSpace
         self.gestures: [] = []
         # https: // ai.google.dev / edge / mediapipe / solutions / vision / gesture_recognizer
-        self.possibleGestures = ["None", "Closed_Fist", "Open_Palm", "Pointing_Up", "Thumb_Down", "Thumb_Up",
+        self.possibleGestures = ["None", "Closed_Fist", "Open_Palm", "Thumb_Down",
                                  "Victory", "ILoveYou"]
 
         self.frame_count: int = 0
