@@ -5,6 +5,7 @@ class Player:
     def __init__(self, screen, startPos: (), size=20):  # Start pos in grid spaces
         self.screen = screen
         self.size = size  # radius of player circle
+        self.startPos = startPos
         self.x, self.y = (startPos[0], startPos[1])
         self.collider = self.getCollider()
         self.move_direction = 2
@@ -31,7 +32,9 @@ class Player:
         elif gestureList[-1]["Name"] == "Thumb_Down":
             self.y += self.move_direction  # move down
         elif gestureList[-1]["Name"] == "ILoveYou":
-            self.x, self.y = (self.size, self.size)
+            self.x = self.startPos[0]
+            self.y = self.startPos[1]
+            # self.x, self.y = (self.size, self.size)
         self.draw()
 
     def collided(self, rect, outOfBounds = False):
