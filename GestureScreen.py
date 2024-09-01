@@ -57,7 +57,7 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
 
         sr = 25
         self.grid = Grid((self.screen.get_width(), self.screen.get_height() - self.heightOffset), sr)
-        self.grid.fill("white")
+        # self.grid.fill("white")
         self.gameFinishedOverlay = pygame.Surface(
             (self.screen.get_width(), self.screen.get_height() - self.heightOffset))
 
@@ -123,7 +123,6 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         self.screen.blit(self.grid, (0, self.heightOffset))
 
     def addGameFinishedOverlay(self):
-        self.gameFinishedOverlay.fill("black")
         self.gameFinishedOverlay.set_alpha(150)
         finishedTxt = self.font.render("Finished!", True, "green")
 
@@ -131,14 +130,15 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
         txt_offset_h = finishedTxt.get_height() / 2
         overlay_offset_w = self.gameFinishedOverlay.get_width() / 2
         overlay_offset_h = self.gameFinishedOverlay.get_height() / 2
-        # txtArea = pygame.Surface((finishedTxt.get_width() + 40, finishedTxt.get_height() + 40))
+        # txtArea = pygame.Surface((finishedTxt.get_width(), finishedTxt.get_height()))
 
-        r = pygame.Rect(overlay_offset_w - txt_offset_w, overlay_offset_h - txt_offset_h, finishedTxt.get_width(),
+        r = pygame.Rect(overlay_offset_w - txt_offset_w, (overlay_offset_h - txt_offset_h)+self.heightOffset, finishedTxt.get_width(),
                         finishedTxt.get_height())
-        pygame.draw.rect(self.gameFinishedOverlay, "white", r.inflate(20, 20), border_radius=50)
 
-        self.gameFinishedOverlay.blit(finishedTxt, (overlay_offset_w - txt_offset_w, overlay_offset_h - txt_offset_h))
         self.screen.blit(self.gameFinishedOverlay, (0, self.heightOffset))
+        pygame.draw.rect(self.screen, "white", r.inflate(20, 20), border_radius=50)
+        self.screen.blit(finishedTxt,
+                         (overlay_offset_w - txt_offset_w, (overlay_offset_h - txt_offset_h) + self.heightOffset))
 
     def display(self):
 
@@ -153,7 +153,8 @@ class GestureScreen:  # sets up a pygame screen connected to a live stream, dete
                          pygame.Rect(0, self.heightOffset - 10, self.screen.get_width(), 10))  # dividing line
         self.addGameContent()
 
-        self.addGameFinishedOverlay()
+        if self.grid.completed:
+            self.addGameFinishedOverlay()
 
         events = pygame.event.get()
         for event in events:
