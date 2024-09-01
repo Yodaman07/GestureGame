@@ -12,7 +12,8 @@ class Player:
 
     def draw(self):  # to be placed in game loop
         pygame.draw.circle(self.screen, "green", (self.x, self.y), self.size)
-        pygame.draw.rect(self.screen, 'pink', self.getCollider())
+        self.getCollider()
+        # pygame.draw.rect(self.screen, 'pink', self.getCollider())
 
     def getCollider(self):
         sr = self.screen.shrinkRatio
@@ -34,7 +35,6 @@ class Player:
         elif gestureList[-1]["Name"] == "ILoveYou":
             self.x = self.startPos[0]
             self.y = self.startPos[1]
-            # self.x, self.y = (self.size, self.size)
         self.draw()
 
     def collided(self, rect, outOfBounds = False):
